@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <style>
+        :root {
+            --teal-050: #effcf6;
+            --teal-100: #c6f7e2;
+            --teal-200: #8eedc7;
+            --teal-300: #65d6ad;
+            --teal-400: #3ebd93;
+            --teal-500: #27ab83;
+            --teal-600: #199473;
+            --teal-700: #147d64;
+            --teal-800: #0c6b58;
+            --teal-900: #014d40;
+
+            --blue-grey-050: #f0f4f8;
+            --blue-grey-100: #d9e2ec;
+            --blue-grey-200: #bcccdc;
+            --blue-grey-300: #9fb3c8;
+            --blue-grey-400: #829ab1;
+            --blue-grey-500: #627d98;
+            --blue-grey-600: #486581;
+            --blue-grey-700: #334e68;
+            --blue-grey-800: #243b53;
+            --blue-grey-900: #102a43;
+        }
+
+        html {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 125%;
+            line-height: 1.4;
+            font-weight: 400;
+            color: var(--blue-grey-100);
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--blue-grey-100);
+        }
+
+        main {
+            max-width: max-content;
+            margin: 3em auto 0 auto;
+            padding: 1.5em;
+            background-color: #fff;
+            border: 2px solid var(--blue-grey-200);
+            border-radius: 8px
+        }
+
+        .month-indicator {
+            color: var(--blue-grey-700);
+            text-align: center;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .day-of-week,
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .day-of-week {
+            margin-top: 1.25em;
+        }
+
+        .day-of-week>* {
+            font-size: 0.7em;
+            color: var(--blue-grey-400);
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            font-variant: small-caps;
+            text-align: center;
+        }
+
+        .date-grid {
+            margin-top: 0.5em;
+        }
+
+        .date-grid button {
+            position: relative;
+            border: 0;
+            width: 4.5ch;
+            height: 4.5ch;
+            border-radius: 50%;
+            background-color: transparent;
+            color: var(--blue-grey-600);
+        }
+
+        .date-grid button:hover,
+        .date-grid button:focus {
+            outline: none;
+            background-color: var(--blue-grey-050);
+            color: var(--blue-grey-700);
+        }
+
+        .date-grid button:active,
+        .date-grid button.is-selected {
+            background-color: var(--teal-100);
+            color: var(--teal-900);
+
+        }
+
+        .next,
+        .prev {
+            border: 0;
+            width: 4.5ch;
+            height: 4.5ch;
+            border-radius: 50%;
+            background-color: var(--teal-050);
+            color: var(--teal-900);
+            text-align: center;
+        }
+
+        .chevron::before {
+            border-style: solid;
+            border-width: 0.25em 0.25em 0 0;
+            content: '';
+            display: inline-block;
+            height: 0.45em;
+            left: 0.15em;
+            position: relative;
+            top: 0.15em;
+            transform: rotate(-45deg);
+            vertical-align: top;
+            width: 0.45em;
+        }
+
+        .chevron.left::before {
+            left: 0.25em;
+            transform: rotate(-135deg);
+            margin-left: -6px;
+            margin-top: 2px;
+        }
+
+        .chevron.right::before {
+            left: 0;
+            transform: rotate(45deg);
+            margin-right: 2px;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="calendar">
+            <div class="month-indicator">
+                <button class="next">
+                    <span class="chevron left"></span>
+                </button>
+                <span class="month-year">Month Year</span>
+                <button class="prev">
+                    <span class="chevron right"></span>
+                </button>
+            </div>
+            <div class="day-of-week">
+                <div>Su</div>
+                <div>Mo</div>
+                <div>Tu</div>
+                <div>We</div>
+                <div>Th</div>
+                <div>Fr</div>
+                <div>Sa</div>
+            </div>
+
+            <div class="date-grid">
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentDate = new Date();
+
+        function pad(number) {
+            if (number < 10) {
+                return `0${number}`;
+            } else {
+                return number;
+            }
+        }
+
+        function loadMonthIntoCalendar(date) {
+            const grid = document.querySelector(".date-grid")
+            grid.innerHTML = "";
+            const monthIndicator = document.querySelector('.month-indicator .month-year')
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            const day = date.getDate();
+            const month = date.getMonth();
+            const year = date.getFullYear();
+            firstDayOfMonth = new Date(year, month, 1);
+
+
+            monthIndicator.innerText = `${monthNames[month]} ${year}`;
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const button = document.createElement('button');
+                if (i == 1) {
+                    button.style.gridColumn = firstDayOfMonth.getDay() + 1;
+                }
+
+                const item = document.createElement('time')
+                item.innerText = i;
+                item.setAttribute('datetime', `${year}-${pad(month + 1)}-${pad(i)}`);
+                button.appendChild(item);
+                grid.appendChild(button);
+            }
+        }
+
+        prev = document.querySelector('.prev');
+        next = document.querySelector('.next');
+
+        prev.addEventListener('click', function (event) {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            loadMonthIntoCalendar(currentDate);
+        })
+
+        next.addEventListener('click', function (event) {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            loadMonthIntoCalendar(currentDate)
+        })
+
+        loadMonthIntoCalendar(currentDate);
+    </script>
+</body>
+
+</html>
